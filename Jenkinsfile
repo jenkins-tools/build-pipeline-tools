@@ -23,6 +23,6 @@ stage 'build2'
 build(job:'test_second_job', 
     parameters:[
         [$class: 'StringParameterValue', name:'check1', value:join.first.result], 
-        [$class: 'StringParameterValue', name:'check2', value:join.first.getDuration()]
+        [$class: 'StringParameterValue', name:'check2', value:join.first.number.toString()]
     ]
 )
