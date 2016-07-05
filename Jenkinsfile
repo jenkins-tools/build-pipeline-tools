@@ -26,3 +26,6 @@ build(job:'test_second_job',
         [$class: 'StringParameterValue', name:'check2', value:join.first.number.toString()]
     ]
 )
+
+stage 'build3'
+sh 'ls'
