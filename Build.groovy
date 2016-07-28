@@ -31,7 +31,7 @@ node('master_pipeline') {
                     [$class: 'StringParameterValue',  name:'build_codename',        value:branch_name],
                     [$class: 'StringParameterValue',  name:'token',                 value:'trigger_clean_build'],
                     [$class: 'StringParameterValue',  name:'extra_images',          value:'starfish-bdk'],
-                    [$class: 'StringParameterValue',  name:'build_starfish_commit', value:'@' + branch_name],
+                    [$class: 'StringParameterValue',  name:'build_starfish_commit', value:'builds/' + branch_name + '/' + build_number],
                     [$class: 'TextParameterValue',    name:'webos_local',           value:'WEBOS_DISTRO_BUILD_ID="318"\nSDKMACHINE="i686"'],
                     [$class: 'StringParameterValue',  name:'Build_summary',         value:'test bdk build'],
                     [$class: 'BooleanParameterValue', name:build_starfish_machine,  value:true],
@@ -63,6 +63,6 @@ node('master_pipeline') {
     }else {
         currentBuild.description = "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
         echo "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
-        slackSend color: 'good', message: "${env.JOB_NAME} - No Change"
+        slackSend color: 'good', message: "${env.BUILD_URL} - No Change"
     }
 }
