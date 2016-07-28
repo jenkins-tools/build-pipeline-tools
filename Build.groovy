@@ -63,6 +63,6 @@ node('master_pipeline') {
     }else {
         currentBuild.description = "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
         echo "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
-        slackSend color: 'good', message: "${env.JOB_NAME}" + ' - No Change'
+        slackSend color: 'good', message: "${env.JOB_NAME} - No Change"
     }
 }
