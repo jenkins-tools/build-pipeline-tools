@@ -19,8 +19,8 @@ node('master_pipeline') {
    sh "python compare_foss_diff.py --jobname ${BUILD_JOB_NAME} --buildnumber ${BUILD_JOB_NUMBER} > compare_result"
    sh "cat compare_result"
    def compare_result = readFile 'compare_result'
-   echo "FOSS Change: " + compare_result
    if ( compare_result == "CHANGED\n" ) {
+       echo "FOSS: " + compare_result
        stage 'Call a clean engineering build'
        echo 'Clean Build'
        def clean_job_name = "clean-engineering-starfish-" + machine_name + "-build"
@@ -58,8 +58,10 @@ node('master_pipeline') {
             sh 'mkdir -p ' + target_root
             sh 'cp -r ' + org_dir + '/ ' + target_dir
             echo "Download Url: " + target_web
+            currentBuild.description = target_web
         }
     }else {
         currentBuild.description = "No Change"
+        echo "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
     }
 }
