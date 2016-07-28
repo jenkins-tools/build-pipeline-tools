@@ -59,5 +59,7 @@ node('master_pipeline') {
             sh 'cp -r ' + org_dir + '/ ' + target_dir
             echo "Download Url: " + target_web
         }
+    }else {
+        currentBuild.description = "No Change"
     }
 }
