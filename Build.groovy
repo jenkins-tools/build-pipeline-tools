@@ -1,5 +1,6 @@
 node('master_pipeline') {
    stage 'Parse build job info'
+   def web_root = "http://webos-ci.lge.com/download/"
    def job_name = "${BUILD_JOB_NAME}"
    def build_number = "${BUILD_JOB_NUMBER}"
    def job_name_arr = job_name.tokenize('-')
@@ -52,9 +53,11 @@ node('master_pipeline') {
             def org_dir = '/binary/build_results/starfish_verifications/' + clean_job_name + '/' + clean_build_number
             def target_root = '/binary/build_results/starfish/' + bdk_job_name
             def target_dir = target_root + '/' + "${env.BUILD_NUMBER}"
+            def target_web = web_root + "/starfish/" + bdk_job_name + "/" + "${env.BUILD_NUMBER}"
 
             sh 'mkdir -p ' + target_root
             sh 'cp -r ' + org_dir + '/ ' + target_dir
+            echo "Download Url: " + target_web
         }
     }
 }
