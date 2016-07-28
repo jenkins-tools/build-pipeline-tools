@@ -61,7 +61,7 @@ node('master_pipeline') {
             currentBuild.description = target_web
         }
     }else {
-        currentBuild.description = "No Change"
+        currentBuild.description = "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
         echo "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
     }
 }
