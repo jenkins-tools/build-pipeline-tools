@@ -43,19 +43,15 @@ node('master_pipeline') {
         }
         ])
 
-
         def clean_build_result = join.clean.result
         def clean_build_number = join.clean.number.toString()
-/*
-        def clean_build_result = "${CLEAN_BUILD_RESULT}"
-        def clean_build_number = "${CLEAN_BUILD_NUMBER}"
-*/
+
         stage 'Copy bdk result'
         node('verification'){
             def bdk_job_name = "starfish-bdk"
             def org_dir = '/binary/build_results/starfish_verifications/' + clean_job_name + '/' + clean_build_number
-            def target_root = '/binary/build_results/temp/' + bdk_job_name
-            def target_dir = target_root + '/' + "${env.BUILD_NUMBER}"+ "_bdk"
+            def target_root = '/binary/build_results/starfish/' + bdk_job_name
+            def target_dir = target_root + '/' + "${env.BUILD_NUMBER}"
 
             sh 'mkdir -p ' + target_root
             sh 'cp -r ' + org_dir + '/ ' + target_dir
