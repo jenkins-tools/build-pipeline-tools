@@ -25,7 +25,7 @@ node('master_pipeline') {
        echo 'Clean Build'
        def target_job_name = "starfishbdk-official-all"
        def build_machines = machine_name
-       currentBuild.description = currentBuild.description + "<br/>" + "Job name: " + job_name
+       currentBuild.description = "Job name    : " + job_name
        currentBuild.description = currentBuild.description + "<br/>" + "Build number: " + build_number 
        join = parallel([clean: {
                 build job:target_job_name, parameters: [
@@ -46,8 +46,7 @@ node('master_pipeline') {
         stage 'Copy bdk result'
         if (clean_build_result == "SUCCESS" ) {
             def target_web = web_root +  'starfish/' + target_job_name + '/' + clean_build_number;
-            currentBuild.description = '<a href=\"' + target_web + '\">' + target_job_name + ':' + clean_build_number + '</a>'
-            currentBuild.description += '<br/>From ' + job_name + ':' + build_number
+            currentBuild.description += '<br/><a href=\"' + target_web + '\">' + target_job_name + ':' + clean_build_number + '</a>'
         }
     }else {
         currentBuild.description = "No change"
