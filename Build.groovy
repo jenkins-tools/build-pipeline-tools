@@ -28,7 +28,6 @@ node('master_pipeline') {
        currentBuild.description = currentBuild.description + "<br/>" + "Job name: " + job_name
        currentBuild.description = currentBuild.description + "<br/>" + "Build number: " + build_number 
        join = parallel([clean: {
-            node('z-swfarm-gateuobld24'){
                 build job:target_job_name, parameters: [
                     [$class: 'StringParameterValue',  name:'SDK_BUILD_BRANCH',        value:"@" + branch_name],
                     [$class: 'StringParameterValue',  name:'SDK_BUILD_NUMBER',        value:build_number],
@@ -38,7 +37,6 @@ node('master_pipeline') {
                     [$class: 'StringParameterValue',  name:'BUILD_CLEANUP_TYPE',      value:'clean'],
                     [$class: 'StringParameterValue',  name:'token',                   value:'trigger_bdk_build'],
                 ]
-            }
         }
         ])
 
