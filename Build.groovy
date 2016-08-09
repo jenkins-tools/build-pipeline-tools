@@ -23,22 +23,20 @@ node('master_pipeline') {
        echo "FOSS: " + compare_result
        stage 'Call a clean engineering build'
        echo 'Clean Build'
-       def clean_job_name = "clean-engineering-starfish-" + machine_name + "-build"
-       def build_starfish_machine = "Build_starfish_" + machine_name
+       def target_job_name = "starfishbdk-official-all"
+       def build_machines = machine_name
+       currentBuild.description = currentBuild.description + "<br/>" + "Job name: " + job_name
+       currentBuild.description = currentBuild.description + "<br/>" + "Build number: " + build_number 
        join = parallel([clean: {
-            node('verification'){
-                build job:clean_job_name, parameters: [
-                    [$class: 'StringParameterValue',  name:'build_codename',        value:branch_name],
-                    [$class: 'StringParameterValue',  name:'token',                 value:'trigger_clean_build'],
-                    [$class: 'StringParameterValue',  name:'extra_images',          value:'starfish-bdk'],
-                    [$class: 'StringParameterValue',  name:'build_starfish_commit', value:'builds/' + branch_name + '/' + build_number],
-                    [$class: 'TextParameterValue',    name:'webos_local',           value:'WEBOS_DISTRO_BUILD_ID="318"\nSDKMACHINE="i686"'],
-                    [$class: 'StringParameterValue',  name:'Build_summary',         value:'test bdk build'],
-                    [$class: 'BooleanParameterValue', name:build_starfish_machine,  value:true],
-                    [$class: 'BooleanParameterValue', name:'region_default',        value:false],
-                    [$class: 'BooleanParameterValue', name:'region_atsc',           value:false],
-                    [$class: 'BooleanParameterValue', name:'region_arib',           value:false],
-                    [$class: 'BooleanParameterValue', name:'region_dvb',            value:false],
+            node('z-swfarm-gateuobld24'){
+                build job:target_job_name, parameters: [
+                    [$class: 'StringParameterValue',  name:'SDK_BUILD_BRANCH',        value:"@" + branch_name],
+                    [$class: 'StringParameterValue',  name:'SDK_BUILD_NUMBER',        value:build_number],
+                    [$class: 'StringParameterValue',  name:'BUILD_PLATFORM_CODENAME', value:'dreadlocks'],
+                    [$class: 'StringParameterValue',  name:'BUILD_SDKMACHINES',       value:'i686'],
+                    [$class: 'StringParameterValue',  name:'BUILD_MACHINES',          value:machine_name],
+                    [$class: 'StringParameterValue',  name:'BUILD_CLEANUP_TYPE',      value:'clean'],
+                    [$class: 'StringParameterValue',  name:'token',                   value:'trigger_bdk_build'],
                 ]
             }
         }
@@ -50,7 +48,7 @@ node('master_pipeline') {
         stage 'Copy bdk result'
         node('verification'){
             def bdk_job_name = "starfish-bdk"
-            def org_dir = '/binary/build_results/starfish_verifications/' + clean_job_name + '/' + clean_build_number
+            def org_dir = '/binary/build_results/starfish/' + target_job_name + '/' + clean_build_number
             def target_root = '/binary/build_results/starfish/' + bdk_job_name
             def target_dir = target_root + '/' + "${env.BUILD_NUMBER}"
             def target_web = web_root + "/starfish/" + bdk_job_name + "/" + "${env.BUILD_NUMBER}"
