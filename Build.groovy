@@ -25,8 +25,8 @@ node('master_pipeline') {
        echo 'Clean Build'
        def target_job_name = "starfishbdk-official-all"
        def build_machines = machine_name
-       currentBuild.description = "Job name    : " + job_name
-       currentBuild.description = currentBuild.description + "<br/>" + "Build number: " + build_number 
+       def official_build_url = "${env.JENKINS_URL}".toString() + "job/" + job_name + "/" + build_number + "/";
+       currentBuild.description = "<a href=\"" + official_build_url + "\">From " + job_name + ":" + build_number + "</a>";
        join = parallel([bdk_build: {
                 build job:target_job_name, parameters: [
                     [$class: 'StringParameterValue',  name:'SDK_BUILD_BRANCH',        value:"@" + branch_name],
