@@ -46,7 +46,9 @@ node('master_pipeline') {
         stage 'Set description'
         if (bdk_build_result == "SUCCESS" ) {
             def target_web = web_root +  'starfish/' + target_job_name + '/' + bdk_build_number;
-            currentBuild.description += '<br/><a href=\"' + target_web + '\">' + target_job_name + ':' + bdk_build_number+ '</a>'
+            def target_job_url = "${env.JENKINS_URL}".toString() + "job/" + target_job_name + "/" + bdk_build_number + "/";
+            currentBuild.description += '<br/><a href=\"' + target_web + '\">' + target_job_name + ':' + bdk_build_number+ '</a>';
+            currentBuild.description += '<br/><a href=\"' + target_job_url + '\">' + 'Build job link</a>';
         }
     }else {
         currentBuild.description = "No change"
