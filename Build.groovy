@@ -26,7 +26,7 @@ node('master_pipeline') {
        def target_job_name = "starfishbdk-official-all"
        def build_machines = machine_name
        def official_build_url = "${env.JENKINS_URL}".toString() + "job/" + job_name + "/" + build_number + "/";
-       currentBuild.description = "<a href=\"" + official_build_url + "\">From " + job_name + ":" + build_number + "</a>";
+       currentBuild.description = "From        :<a href=\"" + official_build_url + "\">" + job_name + ":" + build_number + "</a>";
        join = parallel([bdk_build: {
                 build job:target_job_name, parameters: [
                     [$class: 'StringParameterValue',  name:'SDK_BUILD_BRANCH',        value:"@" + branch_name],
@@ -47,8 +47,8 @@ node('master_pipeline') {
         if (bdk_build_result == "SUCCESS" ) {
             def target_web = web_root +  'starfish/' + target_job_name + '/' + bdk_build_number;
             def target_job_url = "${env.JENKINS_URL}".toString() + "job/" + target_job_name + "/" + bdk_build_number + "/";
-            currentBuild.description += '<br/><a href=\"' + target_web + '\">' + target_job_name + ':' + bdk_build_number+ '</a>';
-            currentBuild.description += '<br/><a href=\"' + target_job_url + '\">' + 'Build job link</a>';
+            currentBuild.description += '<br/>BDK download: <a href=\"' + target_web + '\">' + target_job_name + ':' + bdk_build_number+ '</a>';
+            currentBuild.description += '<br/>BDK buildjob: <a href=\"' + target_job_url + '\">' + 'Build job link</a>';
         }
     }else {
         currentBuild.description = "No change"
