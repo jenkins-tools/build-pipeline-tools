@@ -44,21 +44,14 @@ node('master_pipeline') {
         def clean_build_number = join.clean.number.toString()
 
         stage 'Copy bdk result'
-        node('verification'){
-            def bdk_job_name = "starfish-bdk"
-            def org_dir = '/binary/build_results/starfish/' + target_job_name + '/' + clean_build_number
-            def target_root = '/binary/build_results/starfish/' + bdk_job_name
-            def target_dir = target_root + '/' + "${env.BUILD_NUMBER}"
-            def target_web = web_root + "/starfish/" + bdk_job_name + "/" + "${env.BUILD_NUMBER}"
-
-            sh 'mkdir -p ' + target_root
-            sh 'cp -r ' + org_dir + '/ ' + target_dir
-            echo "Download Url: " + target_web
-            currentBuild.description = target_web
+        if (clean_build_result == "SUCCESS" ) {
+            def target_web = web_root +  'starfish/' + target_job_name + '/' + clean_build_number;
+            currentBuild.description = '<a href=\"' + target_web + '\">' + target_job_name + ':' + clean_build_number + '</a>'
+            currentBuild.description += '<br/>From ' + job_name + ':' + build_number
         }
     }else {
-        currentBuild.description = "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
-        echo "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
+        currentBuild.description = "No change"
+        currentBuild.description += '<br/>From ' + job_name + ':' + build_number
         slackSend color: 'good', message: "${env.BUILD_URL} - No Change"
     }
 }
