@@ -1,5 +1,6 @@
 node('master_pipeline') {
    stage 'Parse build job info'
+   def download_prefix = "starfish/"
    def web_root = "http://webos-ci.lge.com/download/"
    def job_name = "${BUILD_JOB_NAME}"
    def build_number = "${BUILD_JOB_NUMBER}"
@@ -21,48 +22,38 @@ node('master_pipeline') {
    def compare_result = readFile 'compare_result'
    if ( compare_result == "CHANGED\n" ) {
        echo "FOSS: " + compare_result
-       stage 'Call a clean engineering build'
+       stage 'Call starfishbdk-official-all'
        echo 'Clean Build'
-       def clean_job_name = "clean-engineering-starfish-" + machine_name + "-build"
-       def build_starfish_machine = "Build_starfish_" + machine_name
-       join = parallel([clean: {
-            node('verification'){
-                build job:clean_job_name, parameters: [
-                    [$class: 'StringParameterValue',  name:'build_codename',        value:branch_name],
-                    [$class: 'StringParameterValue',  name:'token',                 value:'trigger_clean_build'],
-                    [$class: 'StringParameterValue',  name:'extra_images',          value:'starfish-bdk'],
-                    [$class: 'StringParameterValue',  name:'build_starfish_commit', value:'builds/' + branch_name + '/' + build_number],
-                    [$class: 'TextParameterValue',    name:'webos_local',           value:'WEBOS_DISTRO_BUILD_ID="318"\nSDKMACHINE="i686"'],
-                    [$class: 'StringParameterValue',  name:'Build_summary',         value:'test bdk build'],
-                    [$class: 'BooleanParameterValue', name:build_starfish_machine,  value:true],
-                    [$class: 'BooleanParameterValue', name:'region_default',        value:false],
-                    [$class: 'BooleanParameterValue', name:'region_atsc',           value:false],
-                    [$class: 'BooleanParameterValue', name:'region_arib',           value:false],
-                    [$class: 'BooleanParameterValue', name:'region_dvb',            value:false],
+       def target_job_name = "starfishbdk-official-all"
+       def build_machines = machine_name
+       def official_build_url = "${env.JENKINS_URL}".toString() + "job/" + job_name + "/" + build_number + "/";
+       currentBuild.description = "From        :<a href=\"" + official_build_url + "\">" + job_name + ":" + build_number + "</a>";
+       join = parallel([bdk_build: {
+                build job:target_job_name, parameters: [
+                    [$class: 'StringParameterValue',  name:'SDK_BUILD_BRANCH',        value:"@" + branch_name],
+                    [$class: 'StringParameterValue',  name:'SDK_BUILD_NUMBER',        value:build_number],
+                    [$class: 'StringParameterValue',  name:'BUILD_PLATFORM_CODENAME', value:'dreadlocks'],
+                    [$class: 'StringParameterValue',  name:'BUILD_SDKMACHINES',       value:'i686'],
+                    [$class: 'StringParameterValue',  name:'BUILD_MACHINES',          value:machine_name],
+                    [$class: 'StringParameterValue',  name:'BUILD_CLEANUP_TYPE',      value:'clean'],
+                    [$class: 'StringParameterValue',  name:'token',                   value:'trigger_bdk_build'],
                 ]
-            }
         }
         ])
 
-        def clean_build_result = join.clean.result
-        def clean_build_number = join.clean.number.toString()
+        def bdk_build_result = join.bdk_build.result
+        def bdk_build_number = join.bdk_build.number.toString()
 
-        stage 'Copy bdk result'
-        node('verification'){
-            def bdk_job_name = "starfish-bdk"
-            def org_dir = '/binary/build_results/starfish_verifications/' + clean_job_name + '/' + clean_build_number
-            def target_root = '/binary/build_results/starfish/' + bdk_job_name
-            def target_dir = target_root + '/' + "${env.BUILD_NUMBER}"
-            def target_web = web_root + "/starfish/" + bdk_job_name + "/" + "${env.BUILD_NUMBER}"
-
-            sh 'mkdir -p ' + target_root
-            sh 'cp -r ' + org_dir + '/ ' + target_dir
-            echo "Download Url: " + target_web
-            currentBuild.description = target_web
+        stage 'Set description'
+        if (bdk_build_result == "SUCCESS" ) {
+            def target_web = web_root +  download_prefix + target_job_name + '/' + bdk_build_number;
+            def target_job_url = "${env.JENKINS_URL}".toString() + "job/" + target_job_name + "/" + bdk_build_number + "/";
+            currentBuild.description += '<br/>BDK download: <a href=\"' + target_web + '\">' + target_job_name + ':' + bdk_build_number+ '</a>';
+            currentBuild.description += '<br/>BDK buildjob: <a href=\"' + target_job_url + '\">' + 'Build job link</a>';
         }
     }else {
-        currentBuild.description = "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
-        echo "FOSS: <a href=\"http://www.daum.net/\">No change</a>"
+        currentBuild.description = "No change"
+        currentBuild.description += '<br/>From ' + job_name + ':' + build_number
         slackSend color: 'good', message: "${env.BUILD_URL} - No Change"
     }
 }
