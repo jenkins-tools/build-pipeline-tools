@@ -27,6 +27,7 @@ node('master_pipeline') {
        def target_job_name = "starfishbdk-official-all"
        def build_machines = machine_name
        def official_build_url = "${env.JENKINS_URL}".toString() + "job/" + job_name + "/" + build_number + "/";
+       build_machines += " qemux86"
        currentBuild.description = "From        :<a href=\"" + official_build_url + "\">" + job_name + ":" + build_number + "</a>";
        join = parallel([bdk_build: {
                 build job:target_job_name, parameters: [
@@ -34,7 +35,7 @@ node('master_pipeline') {
                     [$class: 'StringParameterValue',  name:'SDK_BUILD_NUMBER',        value:build_number],
                     [$class: 'StringParameterValue',  name:'BUILD_PLATFORM_CODENAME', value:'dreadlocks'],
                     [$class: 'StringParameterValue',  name:'BUILD_SDKMACHINES',       value:'i686'],
-                    [$class: 'StringParameterValue',  name:'BUILD_MACHINES',          value:machine_name],
+                    [$class: 'StringParameterValue',  name:'BUILD_MACHINES',          value:build_machines],
                     [$class: 'StringParameterValue',  name:'BUILD_CLEANUP_TYPE',      value:'clean'],
                     [$class: 'StringParameterValue',  name:'token',                   value:'trigger_bdk_build'],
                 ]
