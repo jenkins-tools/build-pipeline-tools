@@ -14,7 +14,7 @@ node('master_pipeline') {
         "Build Number": build_number
     ]
    echo parsed_info
-   git branch: 'dev', url: 'http://mod.lge.com/hub/tv_scm_tool/compare_foss_diff.git'
+   git branch: 'master', url: 'http://mod.lge.com/hub/tv_scm_tool/compare_foss_diff.git'
 
    stage 'Check foss change'
    sh "python compare_foss_diff.py --jobname ${BUILD_JOB_NAME} --buildnumber ${BUILD_JOB_NUMBER} > compare_result"
