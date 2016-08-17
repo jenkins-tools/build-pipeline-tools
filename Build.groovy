@@ -77,6 +77,5 @@ node('master_pipeline') {
     }else {
         currentBuild.description = "No change"
         currentBuild.description += '<br/>From ' + job_name + ':' + build_number
-        slackSend color: 'good', message: "${env.BUILD_URL} - No Change"
     }
 }
