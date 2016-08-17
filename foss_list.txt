@@ -42,4 +42,3 @@ sqlite3
 uriparser
 yajl
 zlib
-nlpmanager
