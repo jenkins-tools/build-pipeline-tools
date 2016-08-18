@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import logging
 import argparse
@@ -143,11 +144,14 @@ if __name__ == "__main__":
     build_number = int(args.buildnumber)
     logging.warning("Build Job: " + job_name)
     logging.warning("Build Number: " + str(build_number))
-    image_names = [
-        "starfish-atsc-flash-devel",
-        "starfish-arib-flash-devel",
-        "starfish-dvb-flash-devel"
-    ]
+    if not re.compile('.*-qemux86').match(job_name):
+        image_names = [
+            "starfish-atsc-flash-devel",
+            "starfish-arib-flash-devel",
+            "starfish-dvb-flash-devel"
+        ]
+    else:
+        image_names = [ "starfish-image" ]
     extra_images = []
     for build_image in image_names:
         compare_result = compare_foss_bom(job_name, build_number - 1, job_name, build_number, image_name=build_image)
