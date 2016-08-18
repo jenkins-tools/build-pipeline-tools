@@ -28,7 +28,6 @@ node('master_pipeline') {
        def target_job_name = "starfishbdk-official-all"
        def build_machines = machine_name
        def official_build_url = "${env.JENKINS_URL}".toString() + "job/" + job_name + "/" + build_number + "/";
-       build_machines += " qemux86"
        currentBuild.description = "From        :<a href=\"" + official_build_url + "\">" + job_name + ":" + build_number + "</a>";
        join = parallel([bdk_build: {
                 build job:target_job_name, parameters: [
