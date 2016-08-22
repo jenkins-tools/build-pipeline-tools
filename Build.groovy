@@ -21,6 +21,10 @@ node('master_pipeline') {
    sh "python3 compare_foss_diff.py --jobname ${BUILD_JOB_NAME} --buildnumber ${BUILD_JOB_NUMBER} > compare_result"
    sh "cat compare_result"
    def compare_result = readFile 'compare_result'
+   if ( "${TRIGGER_BDK_BUILD}" == "true" ){
+       echo "INFO: TRIGGER_BDK_BUILD = ${TRIGGER_BDK_BUILD}"
+       compare_result = "CHANGED\n"
+   }
    if ( compare_result == "CHANGED\n" ) {
        echo "FOSS: " + compare_result
        stage 'Call starfishbdk-official-all'
