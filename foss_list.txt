@@ -20,10 +20,12 @@ libffi
 libgcrypt
 libgpg-error
 libgphoto2
+libidn
 libjpeg-turbo
 libmms
 libogg
 libpbnjson
+libpcre
 libpng
 libpng12
 libsoup-2.4
