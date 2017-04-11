@@ -38,6 +38,8 @@ def create_bom_dict(webos_bom):
 
 
 def compare_foss_bom(previous_job, previous_job_number, current_job, current_job_number, image_name="starfish-atsc-flash"):
+    if previous_job_number == 0:
+        return ["first_build"]
     job_name_split = current_job.split("-")
     foss_file_name = "foss_list_{}.txt".format(job_name_split[1])
 
